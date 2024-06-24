@@ -13,5 +13,6 @@ def parse_args():
     parser.add_argument("--min_mtu", type=valid_mtu, default=68, help="Минимальное значение MTU")
     parser.add_argument("--max_mtu", type=valid_mtu, default=3000, help="Максимальное значение MTU")
     parser.add_argument("--interval", type=float, default=0, help="Интервал между попытками в секундах (float)")
+    parser.add_argument("--timeout", type=int, default=3, help="Время на попытку запроса")
 
     return parser.parse_args()

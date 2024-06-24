@@ -19,7 +19,7 @@ def verify_host_reachability(address):
         sys.exit(1)
 
 
-def ping_with_fixed_mtu_size(address, interval, mid_mtu):
+def ping_with_fixed_mtu_size(address, interval, mid_mtu, timeout):
     payload_size = mid_mtu - HEADER_SIZE
 
     logging.info(TEST_CASE_SEPARATOR)
@@ -30,6 +30,7 @@ def ping_with_fixed_mtu_size(address, interval, mid_mtu):
             address,
             interval=interval,
             payload_size=payload_size,
+            timeout=timeout
         )
     except icmplib.exceptions.DestinationUnreachable:
         logging.error(f"Хост {address} недостежим")
@@ -47,21 +48,21 @@ def ping_with_fixed_mtu_size(address, interval, mid_mtu):
     return ping_res
 
 
-def find_mtu(address, min_mtu, max_mtu, interval):
+def find_mtu(address, min_mtu, max_mtu, interval, timeout):
 
     def checker(cur_mtu):
-        res = ping_with_fixed_mtu_size(address, interval, cur_mtu).is_alive
+        res = ping_with_fixed_mtu_size(address, interval, cur_mtu, timeout).is_alive
         time.sleep(interval)
         return res
 
     return binary_search(min_mtu, max_mtu, checker)
 
 
-def check_minimal_mtu(address, min_mtu, max_mtu, interval):
+def check_minimal_mtu(address, min_mtu, max_mtu, interval, timeout):
     verify_host_reachability(address)
 
     try:
-        mtu = find_mtu(address, min_mtu, max_mtu, interval)
+        mtu = find_mtu(address, min_mtu, max_mtu, interval, timeout)
     except Exception as e:
         logging.info(TEST_CASE_SEPARATOR)
         logging.exception(f"Произошла ошибка: {e}")
